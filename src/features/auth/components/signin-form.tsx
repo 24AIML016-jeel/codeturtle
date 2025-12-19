@@ -1,33 +1,74 @@
 'use client'
-import { Input } from '@/components/ui/input'
 import { authClient } from '../lib/auth-client'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Loader2, Github } from 'lucide-react'
+import { useRedirectIfAuthenticated } from '@/hooks/use-auth'
 export function SigninForm() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  
-  const handleSignin = async () => {
-    // Login from the browser
-    const { data, error } = await authClient.signIn.email({
-      email,
-      password
-    })
-    
-    if (error) {
-      alert('Login failed')
-    } else {
-      alert('Login successful!')
-      // Redirect to dashboard
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
+  const { isLoading: isCheckingAuth } = useRedirectIfAuthenticated('/dashboard')
+  if (isCheckingAuth) {
+    return (
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardContent className="py-8">
+            <div className="flex justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+  const handleGithubSignin = async () => {
+    setIsLoading(true)
+    setError('')
+    try {
+      await authClient.signIn.social({
+        provider: 'github',
+        callbackURL: '/dashboard',
+      })
+    } catch (err: any) {
+      const errorMessage = err?.message || 'Failed to sign in with GitHub';
+      setError(errorMessage)
+      console.error('GitHub sign-in error:', err)
+      setIsLoading(false)
     }
   }
-  
   return (
-    <form onSubmit={handleSignin}>
-      <Input type="email" value={email} onChange={e => setEmail(e.target.value)} />
-      <Input type="password" value={password} onChange={e => setPassword(e.target.value)} />
-      <Button type="submit">Login</Button>
-    </form>
+    <div className="flex min-h-screen items-center justify-center p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-1 text-center">
+          <CardTitle className="text-2xl font-bold">Welcome to CodeTurtle</CardTitle>
+          <CardDescription>
+            Sign in with your GitHub account to get started
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {error && (
+            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+              {error}
+            </div>
+          )}
+          <Button
+            type="button"
+            variant="default"
+            size="lg"
+            className="w-full"
+            onClick={handleGithubSignin}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Github className="mr-2 h-4 w-4" />
+            )}
+            Continue with GitHub
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
   )
 }

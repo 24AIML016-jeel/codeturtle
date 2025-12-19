@@ -1,24 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CodeTurtle
+
+A Next.js application with GitHub OAuth authentication, built with Better Auth and Prisma.
+
+## Features
+
+- 🔐 GitHub OAuth authentication (GitHub-only)
+- 📊 PostgreSQL database with Prisma ORM
+- 🎨 Modern UI with Tailwind CSS and Shadcn UI
+- ⚡ Built with Next.js 15 and React 19
+- 🔄 State management with React Query and Zustand
+
+## Prerequisites
+
+- Node.js 18+ or Bun
+- PostgreSQL database
+- GitHub OAuth App credentials
+
+## Environment Setup
+
+1. Create a `.env` file in the root directory:
+
+```env
+DATABASE_URL="postgresql://user:password@host:port/database"
+BETTER_AUTH_SECRET="your-secret-key"
+BETTER_AUTH_URL="http://localhost:3000"
+GITHUB_CLIENT_ID="your-github-client-id"
+GITHUB_CLIENT_SECRET="your-github-client-secret"
+```
+
+2. Create a GitHub OAuth App:
+   - Go to GitHub Settings → Developer settings → OAuth Apps
+   - Create a new OAuth App
+   - Set Authorization callback URL to: `http://localhost:3000/api/auth/callback/github`
+   - Copy Client ID and Client Secret to your `.env` file
 
 ## Getting Started
 
-First, run the development server:
+1. Install dependencies:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+bun install
+```
+
+2. Generate Prisma client and run migrations:
+
+```bash
+npx prisma generate
+npx prisma migrate dev
+```
+
+3. Seed the database with test data (optional):
+
+```bash
+bun run db:seed
+```
+
+4. Run the development server:
+
+```bash
 bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Database Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `bun run db:clear` - Clear all data from database
+- `bun run db:seed` - Clear database (seed creates users automatically via GitHub OAuth)
+
+## Tech Stack
+
+- **Framework:** Next.js 15 with App Router
+- **Language:** TypeScript
+- **Authentication:** Better Auth with GitHub OAuth
+- **Database:** PostgreSQL with Prisma ORM
+- **Styling:** Tailwind CSS
+- **UI Components:** Shadcn UI
+- **State Management:** React Query + Zustand
+- **Runtime:** Bun
 
 ## Learn More
 

@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Loader2 } from 'lucide-react'
 import Image from 'next/image'
 import { useState } from 'react'
+import { toast } from 'sonner'
 export default function DashboardPage() {
   const { session, isLoading, signOut } = useRequireAuth()
   const user = useAuthStore((state) => state.user)
@@ -14,8 +15,10 @@ export default function DashboardPage() {
     setIsSigningOut(true)
     try {
       await signOut()
+      toast.success('Successfully logged out')
     } catch (error) {
       console.error('Failed to sign out:', error)
+      toast.error('Failed to log out. Please try again.')
       setIsSigningOut(false)
     }
   }

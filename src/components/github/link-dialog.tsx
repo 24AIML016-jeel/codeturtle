@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Github } from "lucide-react"
 import { authClient } from "@/features/auth"
+import { toast } from "sonner"
 interface GithubLinkDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -19,12 +20,14 @@ interface GithubLinkDialogProps {
 export function GithubLinkDialog({ open, onOpenChange, feature }: GithubLinkDialogProps) {
   const handleLinkGithub = async () => {
     try {
+      toast.loading('Connecting to GitHub...')
       await authClient.signIn.social({
         provider: 'github',
         callbackURL: window.location.pathname,
       })
     } catch (error) {
       console.error('Failed to link GitHub:', error)
+      toast.error('Failed to connect GitHub account')
     }
   }
   return (

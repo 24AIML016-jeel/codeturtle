@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Loader2, Github } from 'lucide-react'
 import { useRedirectIfAuthenticated } from '@/hooks/use-auth'
+import { toast } from 'sonner'
 export function SigninForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
@@ -25,15 +26,24 @@ export function SigninForm() {
   const handleGithubSignin = async () => {
     setIsLoading(true)
     setError('')
+    
     try {
-      await authClient.signIn.social({
-        provider: 'github',
-        callbackURL: '/dashboard',
-      })
-    } catch (err: any) {
-      const errorMessage = err?.message || 'Failed to sign in with GitHub';
+      toast.promise(
+        authClient.signIn.social({
+          provider: 'github',
+          callbackURL: '/dashboard',
+        }),
+        {
+          loading: 'Signing in with GitHub...',
+          success: 'Redirecting to GitHub...' ,
+          error: (err) => err?.message || 'Failed to sign in with GitHub'
+        }
+      )
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to sign in with GitHub'
       setError(errorMessage)
       console.error('GitHub sign-in error:', err)
+    } finally {
       setIsLoading(false)
     }
   }

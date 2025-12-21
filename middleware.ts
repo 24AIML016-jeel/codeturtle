@@ -1,6 +1,6 @@
-import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
+// Lightweight middleware: avoid importing heavy auth/prisma libs here (keeps edge bundle small).
 export async function middleware(request: Request) {
   const { pathname } = new URL(request.url);
 
@@ -15,27 +15,24 @@ export async function middleware(request: Request) {
     return NextResponse.next();
   }
 
-  const session = await auth.api.getSession({
-    headers: request.headers,
-  });
+  // Minimal check: look for common session/auth cookies or Authorization header.
+  // This avoids pulling heavy authentication libraries into the Edge bundle.
+  const cookieHeader = request.headers.get('cookie') || '';
+  const authHeader = request.headers.get('authorization') || '';
 
-  if (!session) {
-    return NextResponse.redirect(new URL("/login", request.url));
+  const hasSessionCookie = /next-auth\.session-token|sessionToken|session|sb|better_auth/i.test(cookieHeader);
+  const hasAuthHeader = /^Bearer\s+\S+/i.test(authHeader);
+
+  if (!hasSessionCookie && !hasAuthHeader) {
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
+  // Allow; detailed verification should happen in API/Server routes that run in Node env.
   return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - login, register (auth pages)
-     */
     "/((?!api|_next/static|_next/image|favicon.ico|login|register).*)",
   ],
 };

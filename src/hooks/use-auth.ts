@@ -3,21 +3,20 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { authClient } from '@/features/auth'
 import { useAuthStore } from '@/stores/auth-store'
+import { toast } from 'sonner'
 export function useAuth() {
   const session = authClient.useSession()
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(true)
   const { setUser, clearUser } = useAuthStore()
+  
   useEffect(() => {
     if (session.data) {
       setUser(session.data.user)
-    } else {
+    } else if (session.data === null) {
       clearUser()
     }
-    if (session.data !== undefined) {
-      setIsLoading(false)
-    }
   }, [session.data, setUser, clearUser])
+
   const signOut = async () => {
     try {
       await authClient.signOut()
@@ -28,9 +27,10 @@ export function useAuth() {
       throw error
     }
   }
+
   return {
     session: session.data,
-    isLoading,
+    isLoading: session.isPending,
     isAuthenticated: !!session.data,
     signOut,
   }
@@ -38,28 +38,24 @@ export function useAuth() {
 export function useRequireAuth() {
   const { session, isLoading, signOut } = useAuth()
   const router = useRouter()
-  const [isMounted, setIsMounted] = useState(false)
+
   useEffect(() => {
-    setIsMounted(true)
-  }, [])
-  useEffect(() => {
-    if (isMounted && !isLoading && !session) {
+    if (!isLoading && !session) {
       router.push('/login')
     }
-  }, [isMounted, isLoading, session, router])
-  return { session, isLoading: isLoading || !isMounted, signOut }
+    }, [isLoading, session, router]) 
+
+  return { session, isLoading, signOut }
 }
 export function useRedirectIfAuthenticated(redirectTo: string = '/dashboard') {
   const { session, isLoading } = useAuth()
   const router = useRouter()
-  const [isMounted, setIsMounted] = useState(false)
+
   useEffect(() => {
-    setIsMounted(true)
-  }, [])
-  useEffect(() => {
-    if (isMounted && !isLoading && session) {
-      router.push(redirectTo)
+    if (!isLoading && session) {
+      router.replace(redirectTo)
     }
-  }, [isMounted, isLoading, session, router, redirectTo])
-  return { isLoading: isLoading || !isMounted }
+  }, [isLoading, session, router, redirectTo])
+  
+  return { isLoading }
 }

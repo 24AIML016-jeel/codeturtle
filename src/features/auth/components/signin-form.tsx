@@ -3,26 +3,23 @@ import { authClient } from '../lib/auth-client'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Loader2, Github } from 'lucide-react'
+import { Github } from 'lucide-react'
 import { useRedirectIfAuthenticated } from '@/hooks/use-auth'
 import { toast } from 'sonner'
+import { Spinner } from '@/components/ui/spinner'
 export function SigninForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const { isLoading: isCheckingAuth } = useRedirectIfAuthenticated('/dashboard')
+
   if (isCheckingAuth) {
     return (
-      <div className="flex min-h-screen items-center justify-center p-4">
-        <Card className="w-full max-w-md">
-          <CardContent className="py-8">
-            <div className="flex justify-center">
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-            </div>
-          </CardContent>
-        </Card>
+      <div className="flex min-h-screen items-center justify-center">
+        <Spinner/>
       </div>
     )
   }
+
   const handleGithubSignin = async () => {
     setIsLoading(true)
     setError('')
@@ -71,7 +68,7 @@ export function SigninForm() {
             disabled={isLoading}
           >
             {isLoading ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Spinner />
             ) : (
               <Github className="mr-2 h-4 w-4" />
             )}

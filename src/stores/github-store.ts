@@ -93,7 +93,9 @@ export function useGithubRepo(owner: string, repo: string) {
   return useQuery({
     queryKey: githubKeys.repo(owner, repo),
     queryFn: async (): Promise<GithubRepo> => {
-      const res = await fetch(`/api/user/github-repo/${owner}/${repo}`)
+      const encodedOwner = encodeURIComponent(owner)
+      const encodedRepo = encodeURIComponent(repo)
+      const res = await fetch(`/api/user/github-repo/${encodedOwner}/${encodedRepo}`)
       if (!res.ok) {
         throw new Error('Failed to fetch GitHub repository')
       }
@@ -146,7 +148,13 @@ export function useUnlinkGithubAccount() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: githubKeys.account })
       queryClient.removeQueries({ queryKey: githubKeys.user })
-      queryClient.removeQueries({ queryKey: githubKeys.repos() })
+      // Remove any paginated repos queries (match by key prefix)
+      queryClient.removeQueries({
+        predicate: (query) =>
+          Array.isArray(query.queryKey) &&
+          query.queryKey[0] === 'github' &&
+          query.queryKey[1] === 'repos',
+      })
       toast.success('GitHub account unlinked successfully')
     },
     onError: (error) => {
@@ -169,7 +177,13 @@ export function useSyncGithubRepos() {
       return res.json()
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: githubKeys.repos() })
+      // Invalidate all paginated repos queries
+      queryClient.invalidateQueries({
+        predicate: (query) =>
+          Array.isArray(query.queryKey) &&
+          query.queryKey[0] === 'github' &&
+          query.queryKey[1] === 'repos',
+      })
       toast.success('GitHub repositories synced successfully')
     },
     onError: (error) => {

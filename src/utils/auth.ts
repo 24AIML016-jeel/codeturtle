@@ -10,7 +10,8 @@ export const authenticateWithGithub = async () => {
     });
     toast.success('Redirecting to GitHub...');
   } catch (error) {
-    toast.error(error?.message || 'Failed to sign in with GitHub');
+    const message = error instanceof Error ? error.message : 'Failed to sign in with GitHub';
+    toast.error(message);
     throw error;
   }
 }

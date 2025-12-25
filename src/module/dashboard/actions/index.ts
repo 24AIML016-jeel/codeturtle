@@ -5,14 +5,12 @@ import { prisma } from "@/lib/prisma";
 import { Octokit } from "octokit";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { create } from "domain";
 
 export async function getDashboardStats() {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) {
     throw new Error("Unauthorized");
   }
-  const userId = session.user.id;
   const token = await getGithubToken();
   if (!token) {
     throw new Error("No GitHub token found");
@@ -44,20 +42,6 @@ export async function getDashboardStats() {
     totalAIReviews,
   };
 }
-
-const generateSampleReviews = () => {
-  const sampleReviews = [];
-  const now = new Date();
-  for (let i = 0; i < 45; i++) {
-    const randomDaysAgo = Math.floor(Math.random() * 180);
-    const reviewDate = new Date(now);
-    reviewDate.setDate(now.getDate() - randomDaysAgo);
-    sampleReviews.push({
-      createdAt: reviewDate,
-    });
-  }
-  return sampleReviews;
-};
 
 export async function getMonthlyActivity() {
   try {
@@ -119,17 +103,9 @@ export async function getMonthlyActivity() {
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
-    //todo: review's real data
-    const sampleReviews = generateSampleReviews();
+    // TODO: Fetch real review data from database
+    // Reviews remain at 0 until implemented
 
-    sampleReviews.forEach((review) => {
-      const monthKey = `${
-        monthsNames[review.createdAt.getMonth()]
-      } ${review.createdAt.getFullYear()}`;
-      if (monthlyData[monthKey]) {
-        monthlyData[monthKey].reviews += 1;
-      }
-    });
     const { data: prs } = await octokit.rest.search.issuesAndPullRequests({
       q: `is:pr author:${user.login} type:pr created:>=${
         sixMonthsAgo.toISOString().split("T")[0]

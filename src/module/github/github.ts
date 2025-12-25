@@ -22,18 +22,21 @@ export const getGithubToken = async () => {
   if (!account) {
     throw new Error("GitHub account not linked");
   }
+  if (!account.accessToken) {
+    throw new Error("GitHub access token is null");
+  }
   return account.accessToken;
 };
 
-export async function fetchUserContribution(tocken: string, username: string) {
+export async function fetchUserContribution(token: string, username: string) {
   const octokit = new Octokit({
-    auth: tocken,
+    auth: token,
   });
   const query = `
     query ($username: String!) {
         user(login: $username) {
             contributionsCollection {
-                contributionCalendar
+                contributionCalendar {
                     totalContributions
                     weeks {
                         contributionDays {
@@ -47,7 +50,7 @@ export async function fetchUserContribution(tocken: string, username: string) {
         }
     }`;
 
-    interface contibutionData {
+    interface contributionData {
       user: {
         contributionsCollection: {
             contributionCalendar: any;
@@ -64,7 +67,7 @@ export async function fetchUserContribution(tocken: string, username: string) {
     }
 
     try {
-      const response:contibutionData = await octokit.graphql(query, { username });
+      const response:contributionData = await octokit.graphql(query, { username });
       return response.user.contributionsCollection;
     }
     catch (error) {

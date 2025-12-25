@@ -35,7 +35,8 @@ export const ThemeToggleButton = ({
   onClick,
 }: ThemeToggleButtonProps) => {
   return (
-    <span
+    <button
+      type="button"
       onClick={onClick}
       className={cn("flex items-center", className)}
       aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
@@ -50,7 +51,7 @@ export const ThemeToggleButton = ({
           {theme === 'light' ? 'Light' : 'Dark'}
         </span>
       )}
-    </span>
+    </button>
   );
 };
 
@@ -103,10 +104,14 @@ export const useThemeToggle = (start: StartPosition = 'top-right') => {
 
     if ('startViewTransition' in document) {
       (document as any).startViewTransition(() => {
-        setTheme(theme === 'dark' ? 'light' : 'dark');
+        if (theme) {
+          setTheme(theme === 'dark' ? 'light' : 'dark');
+        }
       });
     } else {
-      setTheme(theme === 'dark' ? 'light' : 'dark');
+      if (theme) {
+        setTheme(theme === 'dark' ? 'light' : 'dark');
+      }
     }
   }, [theme, setTheme, start]);
 

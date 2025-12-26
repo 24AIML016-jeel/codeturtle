@@ -67,7 +67,7 @@ export async function fetchUserContribution(token: string, username: string) {
 
     try {
       const response:contributionData = await octokit.graphql(query, { username });
-      return response.user.contributionsCollection;
+      return response.user.contributionsCollection.contributionCalendar;
     }
     catch (error) {
         console.error("Error fetching user contributions:", error);

@@ -5,6 +5,41 @@ import { Octokit } from "octokit";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 
+// Sample review data for last 6 months
+const SAMPLE_REVIEWS = [10, 8, 7, 6, 5, 8];
+
+export async function getContributionGraph() {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
+  const token = await getGithubToken();
+  if (!token) {
+    throw new Error("No GitHub token found");
+  }
+  const { data: user } = await new Octokit({
+    auth: token,
+  }).rest.users.getAuthenticated();
+  const calendar = await fetchUserContribution(token, user.login);
+
+  if (!calendar) {
+    throw new Error("Failed to fetch contribution data");
+  }
+
+  const contributions= calendar.weeks.flatMap((week: any) =>
+      week.contributionDays.map((day: any) => ({
+          date: day.date,
+          count: day.contributionCount,
+          color: day.color,
+          level:Math.min(4,Math.floor(day.contributionCount / 3))
+      }))
+  );
+  return {
+      contributions,
+      totalContributions: calendar.totalContributions,
+  }
+}
+
 export async function getDashboardStats() {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) {
@@ -23,16 +58,15 @@ export async function getDashboardStats() {
   //todo to fetch total connected repos
   const totalRepos = 30;
   const calendar = await fetchUserContribution(token, user.login);
-  const totalCommits = calendar?.contributionCalendar?.totalContributions || 0;
+  const totalCommits = calendar?.totalContributions || 0;
 
   const { data: prs } = await octokit.rest.search.issuesAndPullRequests({
     q: `is:pr author:${user.login} `,
   });
   const totalPRs = prs.total_count || 0;
 
-  //todo count ai reviews from db
-
-  const totalAIReviews = 44;
+  // Calculate total AI reviews from monthly sample data
+  const totalAIReviews = SAMPLE_REVIEWS.reduce((sum, val) => sum + val, 0);
 
   return {
     totalRepos,
@@ -42,6 +76,18 @@ export async function getDashboardStats() {
   };
 }
 
+/**
+ * Fetches the monthly activity data for the authenticated user from GitHub,
+ * including commits, pull requests (PRs), and reviews over the last 6 months.
+ * 
+ * This function retrieves the user's contribution calendar to count commits per month,
+ * and uses the GitHub search API to count PRs created by the user. Reviews are currently
+ * not implemented and default to 0.
+ * 
+ * @returns A promise that resolves to an array of objects, each containing the month name
+ * (e.g., "Jan 2023"), and the counts for commits, PRs, and reviews. Returns null if an error occurs.
+ * @throws {Error} If the user is unauthorized or no GitHub token is found.
+ */
 export async function getMonthlyActivity() {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
@@ -86,8 +132,8 @@ export async function getMonthlyActivity() {
       monthlyData[monthKey] = { commits: 0, prs: 0, reviews: 0 };
     }
 
-    calendar?.contributionCalendar?.weeks.forEach((week:any) => {
-      week.contributionDays.forEach((day:any) => {
+    calendar?.weeks.forEach((week: any) => {
+      week.contributionDays.forEach((day: any) => {
         const date = new Date(day.date);
         const monthKey = `${
           monthsNames[date.getMonth()]
@@ -121,6 +167,14 @@ export async function getMonthlyActivity() {
         monthlyData[monthKey].prs += 1;
       }
     });
+
+    // Add sample review data that sums to total AI reviews
+    let reviewIndex = 0;
+    Object.keys(monthlyData).forEach((monthKey) => {
+      monthlyData[monthKey].reviews = SAMPLE_REVIEWS[reviewIndex] || 0;
+      reviewIndex++;
+    });
+
     return Object.keys(monthlyData).map((name) => ({
       name,
       ...monthlyData[name],

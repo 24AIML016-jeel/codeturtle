@@ -10,17 +10,24 @@ interface CheckboxProps {
 const TorchCheckbox: React.FC<CheckboxProps> = ({ onChange }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
-      const count = parseInt(localStorage.getItem('torchCount') || '0', 10) + 1;
-      localStorage.setItem('torchCount', count.toString());
+      try {
+        if (typeof window !== 'undefined' && window.localStorage) {
+          const count = parseInt(localStorage.getItem('torchCount') || '0', 10) + 1;
+          localStorage.setItem('torchCount', count.toString());
       
-      if (count === 1) {
-        toast.success('Achievement Unlocked: Fear Conquered 🔥');
-      } else if (count === 2) {
-        toast.success('Torch lit again! You\'re a natural! 🌟');
-      } else if (count === 3) {
-        toast.success('Third time\'s the charm! Keep shining! ✨');
-      } else {
-        toast.success(`Torch master! Lit ${count} times. You\'re unstoppable! 🚀`);
+          if (count === 1) {
+            toast.success('Achievement Unlocked: Fear Conquered 🔥');
+          } else if (count === 2) {
+            toast.success('Torch lit again! You\'re a natural! 🌟');
+          } else if (count === 3) {
+            toast.success('Third time\'s the charm! Keep shining! ✨');
+          } else {
+            toast.success(`Torch master! Lit ${count} times. You\'re unstoppable! 🚀`);
+          }
+        }
+      } catch (error) {
+        // Silently fail if localStorage is unavailable
+        console.warn('localStorage unavailable:', error);
       }
     }
     onChange?.(e);

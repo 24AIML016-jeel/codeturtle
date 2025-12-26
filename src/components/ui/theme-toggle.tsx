@@ -3,6 +3,7 @@ import { Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { startViewTransition } from '@/lib/view-transition'
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
@@ -18,13 +19,9 @@ export function ThemeToggle() {
     )
   }
   const toggleTheme = () => {
-    if ('startViewTransition' in document) {
-      (document as Document & { startViewTransition: (callback: () => void) => void }).startViewTransition(() => {
-        setTheme(theme === 'dark' ? 'light' : 'dark')
-      })
-    } else {
+    startViewTransition(() => {
       setTheme(theme === 'dark' ? 'light' : 'dark')
-    }
+    })
   }
   return (
     <Button

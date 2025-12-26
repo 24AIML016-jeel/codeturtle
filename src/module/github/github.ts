@@ -62,14 +62,6 @@ export async function fetchUserContribution(token: string, username: string) {
               }[];
               totalContributions: number;
             };
-            totalContributions: number;
-            weeks: {
-                contributionDays: {
-                    date: string;
-                    contributionCount: number;
-                    color: string;
-                }[];
-            }[];
         };
       };
     }

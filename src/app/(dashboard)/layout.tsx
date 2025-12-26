@@ -14,7 +14,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
       <main className="w-full h-full">
         <Navbar />
         <div className="container p-8">
-          <div className="max-w-2xl">
+          <div >
             <Suspense fallback={
               <div className="flex items-center justify-center w-full h-32">
                 <Spinner />

@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getContributionGraph } from '@/module/dashboard/actions';
 
 
-const contributionGraph = () => {
+const ContributionGraph = () => {
     const {theme} = useTheme();
     const [screenSize, setScreenSize] = useState<'sm' | 'md' | 'lg'>('lg');
 
@@ -112,4 +112,4 @@ const contributionGraph = () => {
     );
 }
 
-export default contributionGraph
+export default ContributionGraph

@@ -143,7 +143,7 @@ export async function getMonthlyActivity() {
         }
       });
     });
-    console.log(calendar)
+
     // Fetch PRs and reviews from GitHub API
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);

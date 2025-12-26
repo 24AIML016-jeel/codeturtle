@@ -1,5 +1,5 @@
 import { AppSidebar } from "@/components/app-sidebar";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { Spinner } from "@/components/ui/spinner";
 import { Suspense } from "react";
 import Navbar from "@/components/navbar";
@@ -13,10 +13,10 @@ export default async function Layout({ children }: { children: React.ReactNode }
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main className="w-full h-full">
+      <SidebarInset className="overflow-x-hidden">
         <Navbar />
-        <div className="container p-8">
-          <div >
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-8">
             <Suspense fallback={
               <div className="flex items-center justify-center w-full h-32">
                 <Spinner />
@@ -26,7 +26,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
             </Suspense>
           </div>
         </div>
-      </main>
+      </SidebarInset>
     </SidebarProvider>
   );
 }

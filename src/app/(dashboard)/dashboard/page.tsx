@@ -111,7 +111,7 @@ const page = () => {
         <CardHeader className="space-y-1">
           <CardTitle>Monthly Activity (Last 6 Months)</CardTitle>
           <CardDescription>
-            Overview of commits, PRs, and reviews
+            Overview of PRs, and reviews
           </CardDescription>
         </CardHeader>
 

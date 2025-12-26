@@ -21,6 +21,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { useMemo } from 'react'
+import { Spinner } from '../ui/spinner'
 
 interface MonthlyActivityData {
   name: string
@@ -35,13 +36,13 @@ interface MonthlyActivityChartProps {
 }
 
 const chartConfig = {
-  prs: {
-    label: 'PRs',
-    color: '#10b981',
-  },
   reviews: {
     label: 'AI Reviews',
     color: '#f59e0b',
+  },
+  prs: {
+    label: 'PRs',
+    color: '#10b981',
   },
 } satisfies ChartConfig
 
@@ -73,12 +74,12 @@ export function MonthlyActivityChart({
   const chartData = useMemo(() => data ?? [], [data])
 
   return (
-    <div className="flex flex-col justify-between h-full">
+    <div className="flex flex-col justify-between min-h-80">
       {/* Chart Area */}
       <div className="flex-1">
         {isLoading ? (
-          <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-            Loading activity…
+          <div className="flex min-h-60 items-center justify-center text-sm text-muted-foreground">
+            <Spinner className="mr-2" /> Loading monthly activity data...
           </div>
         ) : (
           <ChartContainer config={chartConfig}>
@@ -127,18 +128,18 @@ export function MonthlyActivityChart({
 
                 <Area
                   type="monotone"
-                  dataKey="prs"
-                  stroke={chartConfig.prs.color}
-                  fill="url(#prsGradient)"
+                  dataKey="reviews"
+                  stroke={chartConfig.reviews.color}
+                  fill="url(#reviewsGradient)"
                   strokeWidth={2}
                   dot={false}
                 />
 
                 <Area
                   type="monotone"
-                  dataKey="reviews"
-                  stroke={chartConfig.reviews.color}
-                  fill="url(#reviewsGradient)"
+                  dataKey="prs"
+                  stroke={chartConfig.prs.color}
+                  fill="url(#prsGradient)"
                   strokeWidth={2}
                   dot={false}
                 />

@@ -3,7 +3,6 @@
 import * as React from "react"
 import { usePathname } from "next/navigation"
 
-import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { LogOut } from "lucide-react"
@@ -15,7 +14,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
 import { useRequireAuth } from "@/hooks/use-auth"
 import { useAuthStore } from "@/stores/auth-store"
 import { useState } from "react"
@@ -52,9 +50,6 @@ export default function Navbar() {
 
   return (
     <header className="flex h-16 items-center gap-2 border-b px-4">
-      <SidebarTrigger />
-
-      <Separator orientation="vertical" className="mx-2 h-4" />
 
       <div className="flex-1">
         <Breadcrumb>

@@ -20,8 +20,12 @@ export function RepositoryList(){
         staleTime: Infinity,
         refetchOnWindowFocus: false,
     });
+    const [disconnectingId, setDisconnectingId] = useState<string | null>(null);
     const disconnectMutation = useMutation({
         mutationFn: async (repositoryId: string) => disconnectRepository(repositoryId),
+        onMutate: (repositoryId: string) => {
+            setDisconnectingId(repositoryId);
+        },
         onSuccess: (result) => {
             if(result?.success){
                 queryClient.invalidateQueries({ queryKey: ['connected-repositories'] });
@@ -31,6 +35,9 @@ export function RepositoryList(){
             else{
                 toast.error(result?.error||"Failed to disconnect repository");
             }
+        },
+        onSettled: () => {
+            setDisconnectingId(null);
         }
     });
 
@@ -56,7 +63,7 @@ export function RepositoryList(){
                     <CardDescription>Manage your connected GitHub repositories</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className='animate-plus space-y-4'>
+                        <div className='animate-pulse space-y-4'>
                         <div className='h-20 bg-muted rounded'></div>
                         <div className='h-20 bg-muted rounded'></div>
                     </div>
@@ -104,10 +111,10 @@ export function RepositoryList(){
                                 </a>
                                 <Badge className='bg-muted text-muted-foreground'>{new URL(repo.url).hostname}</Badge>
                             </div>
-                            <Button variant="destructive" size="sm" onClick={() => disconnectMutation.mutate(repo.id)} disabled={disconnectMutation.isPending}>
-                                {disconnectMutation.isPending ? 'Disconnecting...' : (<>
-                                    <Trash2 size={16} className='mr-2' /> Disconnect
-                                </>)}
+                                <Button variant="destructive" size="sm" onClick={() => disconnectMutation.mutate(repo.id)} disabled={disconnectingId !== null}>
+                                    {disconnectingId === repo.id ? 'Disconnecting...' : (<>
+                                        <Trash2 size={16} className='mr-2' /> Disconnect
+                                    </>)}
                             </Button>
                         </div>
                     )) : (

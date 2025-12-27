@@ -58,7 +58,8 @@ export const connectRepository = async (owner: string,repo: string,githubId: num
                 fullName: `${owner}/${repo}`,
                 url: `https://github.com/${owner}/${repo}`,
                 userId: session.user.id,
-                hookId: BigInt(webhook.id),
+                hookId: webhook.id ? BigInt(webhook.id) : undefined,
+                hookSecret: (webhook as any).secret || undefined,
             },
         });
 

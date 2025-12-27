@@ -32,6 +32,7 @@ model Repository {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   hookId    BigInt?
+  hookSecret String?
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -144,17 +144,19 @@ export const createWebhook = async (owner:string,repo:string) => {
     return existingHook;
   }
   try {
+    const secret = crypto.randomBytes(32).toString('hex');
     const response = await octokit.rest.repos.createWebhook({
       owner,
       repo,
       config: {
         url: webhookUrl,
         content_type: "json",
-        secret: crypto.randomBytes(32).toString('hex'),
+        secret,
       },
       events: ["pull_request"],
     });
-    return response.data;
+    // Return webhook data plus the generated secret so the server can persist it
+    return { ...response.data, secret };
   } catch (error: any) {
     if (error.status === 404) {
       throw new Error("You don't have permission to create webhooks on this repository. Make sure you have admin access to the repository.");

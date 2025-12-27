@@ -107,9 +107,15 @@ export function RepositoryList(){
                                 <a href={repo.url} target="_blank" rel="noopener noreferrer" className='font-medium text-lg hover:underline flex items-center gap-1'>
                                     {repo.name} <ExternalLink size={16} />
                                 </a>
-                                <Badge className='bg-muted text-muted-foreground'>{new URL(repo.url).hostname}</Badge>
+                                <Badge className='bg-muted text-muted-foreground'>{(() => {
+                                    try {
+                                        return new URL(repo.url).hostname;
+                                    } catch (err) {
+                                        return repo.url || 'unknown';
+                                    }
+                                })()}</Badge>
                             </div>
-                                <Button variant="destructive" size="sm" onClick={() => disconnectMutation.mutate(repo.id)} disabled={disconnectingId !== null && disconnectingId !== repo.id}>
+                                <Button variant="destructive" size="sm" onClick={() => disconnectMutation.mutate(repo.id)} disabled={disconnectingId !== null}>
                                     {disconnectingId === repo.id ? 'Disconnecting...' : (<>
                                         <Trash2 size={16} className='mr-2' /> Disconnect
                                     </>)}

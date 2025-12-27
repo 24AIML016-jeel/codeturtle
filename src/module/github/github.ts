@@ -141,7 +141,8 @@ export const createWebhook = async (owner:string,repo:string) => {
   }
   const existingHook = hooks.find(hook => hook.config.url === webhookUrl);
   if (existingHook) {
-    return existingHook;
+    // Return consistent shape: include `secret` property (null when existing)
+    return { ...existingHook, secret: null } as any;
   }
   try {
     const secret = crypto.randomBytes(32).toString('hex');

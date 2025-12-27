@@ -4,6 +4,8 @@ import prisma from "@/lib/prisma";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Github } from "lucide-react";
 import { GithubConnectButton } from "@/components/settings/GithubConnectButton";
+import ProfileForm from "@/components/pages/profile-form";
+import { RepositoryList } from "@/components/github/repository-list";
 
 export const dynamic = 'force-dynamic';
 
@@ -19,7 +21,6 @@ export default async function SettingsPage() {
     });
     githubConnected = !!account;
   }
-
   return (
     <div className="space-y-6">
       <div>
@@ -55,6 +56,12 @@ export default async function SettingsPage() {
           )}
         </CardContent>
       </Card>
+      <div className="space-y-4">
+          <ProfileForm />
+      </div>
+      <div className="space-y-4">
+          <RepositoryList/>
+      </div>
     </div>
   );
 }

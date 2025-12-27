@@ -38,6 +38,13 @@ export const auth = betterAuth({
     github: {
       clientId: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
+      // Request repository and webhook administration scopes so the token can create/delete webhooks
+      // 'repo' grants full control of private repositories; 'admin:repo_hook' grants webhook admin rights
+      // Provide scopes as a string array (trim whitespace and ignore empty entries)
+      scope: (process.env.GITHUB_OAUTH_SCOPE || 'repo,admin:repo_hook,user:email')
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean),
     },
   },
 });

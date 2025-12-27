@@ -42,12 +42,9 @@ const Page = () => {
     hasNextPage,
     isFetchingNextPage,
   } = useRepositories()
-  const [localConnectingId, setLocalConnectingId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('')
   const loadMoreRef = useRef<HTMLDivElement | null>(null)
-
   const connectRepoMutation = useConnectRepository()
-  const {mutate:connectRepo} = useConnectRepository();
   const getLanguageColor = (language: string | null) => {
     if (!language) return 'bg-gray-400'
     const colors: Record<string, string> = {
@@ -123,18 +120,6 @@ const Page = () => {
 
     return () => observer.disconnect()
   }, [hasNextPage, isFetchingNextPage, fetchNextPage])
-
-  const handleConnect = (repo: Repository) => {
-    setLocalConnectingId(repo.id);
-    connectRepo({owner: repo.fullName.split('/')[0],
-      repo: repo.name,
-      githubId: repo.id},
-      {
-      onSettled: () => {
-        setLocalConnectingId(null);
-      }
-    });
-  }
 
   return (
     <div className="flex flex-col gap-6">

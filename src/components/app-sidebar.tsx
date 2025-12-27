@@ -39,6 +39,11 @@ const generalItems = [
     icon: LayoutDashboard,
   },
   {
+    title: "Repositories",
+    url: "/repositories",
+    icon: Book,
+  },
+  {
     title: "Analytics",
     url: "/analytics",
     icon: ChartLine,

@@ -3,6 +3,7 @@
 A Next.js application with GitHub OAuth authentication, built with Better Auth and Prisma.
 
 ## Warning
+<h1 align="center">🚧 Project Under Construction 🚧</h1>
 
 The site is under construction, so OAuth of GitHub might not work because it is set temperaroly for the local URL for development. 
 

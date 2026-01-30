@@ -96,7 +96,7 @@ export default function Navbar() {
         </Breadcrumb>
       </div>
 
-      {/* Logout button on the right */}
+      {/* its all over from the log out and the sign out event handler*/}
       <div className="ml-4 flex items-center">
         {isAuthenticated && (
           <Button

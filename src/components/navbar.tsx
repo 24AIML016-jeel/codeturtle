@@ -42,7 +42,7 @@ export default function Navbar() {
   const segments = pathname
     .split("/")
     .filter(Boolean) 
-
+// sign function AND ITS SPECIALLY AUTHORIZED HANDLER
   const { signOut } = useRequireAuth()
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
   const [isSigningOut, setIsSigningOut] = useState(false)

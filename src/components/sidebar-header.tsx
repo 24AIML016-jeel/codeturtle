@@ -64,7 +64,7 @@ export const SidebarHeaderContent = memo(function SidebarHeaderContent() {
             </div>
           </div>
           
-          {/* Trigger button - always visible when expanded */}
+          {/* its is a classname for the trigger button and the that work when the slide bar is triggered */}
           <SidebarTrigger className="shrink-0" />
         </div>
       )}

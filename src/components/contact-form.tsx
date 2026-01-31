@@ -22,13 +22,13 @@ const ContactForm = () => {
     e.preventDefault();
     // Handle form submission here, e.g., send to API
     console.log('Form submitted:', formData);
-    // Reset form
+    // this is the data for the reset form and the data for the email and button for submit and reset data
     setFormData({ name: '', email: '', message: '' });
   };
 
   return (
     <Card className="flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-8 px-6 py-6">
-      
+
       <div className="flex-1 first-item">
         <h1 className="text-4xl font-bold mb-6">Get in Touch</h1>
         <p className="text-sm text-muted-foreground mb-8">
